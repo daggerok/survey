@@ -1,0 +1,16 @@
+apiVersion: skaffold/v1beta17
+kind: Config
+metadata:
+  name: survey-system
+build:
+  artifacts:
+    - image: daggerok/voting-system
+      jib:
+        project: voting-system
+        args:
+          - -e
+          - -P!dev
+deploy:
+  kubectl:
+    manifests:
+    - k8s/*

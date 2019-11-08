@@ -1,0 +1,22 @@
+# k3d create --api-port 6551 --publish 80:80 --workers 2
+# ...
+# export KUBECONFIG="$(k3d get-kubeconfig --name='k3s-default')"
+# ...
+# k3d stop
+# k3d delete
+---
+apiVersion: networking.k8s.io/v1beta1
+#apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: survey-ingr
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              serviceName: voting-svc
+              servicePort: 80
+---

@@ -1,0 +1,51 @@
+# k3d create --api-port 6551 --publish 80:80 --workers 2
+# ...
+# export KUBECONFIG="$(k3d get-kubeconfig --name='k3s-default')"
+# ...
+# k3d stop
+# k3d delete
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voting-depl
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: voting
+  template:
+    metadata:
+      labels:
+        app: voting
+    spec:
+      containers:
+        - name: voting-cntr
+          image: daggerok/voting-system
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voting-svc
+spec:
+  selector:
+    app: voting
+  type: LoadBalancer
+  ports:
+    - port: 80
+      name: http
+      protocol: TCP
+      targetPort: 8080
+---
