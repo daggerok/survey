@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/Semantic-UI/2.4.1/semantic.css"
+          data-th-href="@{/webjars/Semantic-UI/semantic.min.css}"/>
+    <link rel="shortcut icon" href="/favicon.ico" data-th-href="@{/favicon.ico}" type="image/x-icon"/>
+    <style>
+        html, body {
+            padding: 1%;
+        }
+
+        ul {
+            list-style: none;
+        }
+    </style>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>Vote!</title>
+</head>
+<body>
+<!--/*@thymesVar id="message" type="com.github.daggerok.surveys.votingsystem.Message"*/-->
+<form class="prevent-me" action="#" data-th-action="@{/pub-sub/}" data-th-object="${message}" method="post">
+    <div>Send message: <input class="input" autofocus type="text" data-th-field="*{body}"/></div>
+    <div><input hidden type="submit" value="Send message"/></div>
+</form>
+<p>Hostname is: [[${hostname}]]</p>
+<!--/*@thymesVar id="stream" type="com.github.daggerok.surveys.votingsystem.VotingPage"*/-->
+<ul class="pub-sub" data-th-each="msg : ${stream}">
+    <li>[[ ${msg} ]]</li>
+</ul>
+<script>
+    window.addEventListener('DOMContentLoaded', function (evt) {
+        function formElement () {
+            return document.querySelector('.prevent-me');
+        }
+        function getInputElement() {
+            return (formElement().getElementsByClassName('input') || { value: 'oops' })[0];
+        }
+        formElement().addEventListener('submit', function (ev) {
+            ev.preventDefault();
+            var inputElement = getInputElement();
+            var value = inputElement.value;
+            inputElement.value = '';
+            var promise = fetch('/api/pub-sub', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ body: value }),
+            });
+            promise.then(console.debug);
+        });
+        var eventSource = new EventSource('http://127.0.0.1:8080/pub-sub/stream');
+        function getPubSub() {
+            return document.querySelector('.pub-sub');
+        }
+        eventSource.addEventListener('message', function (message) {
+            // console.log(getPubSub());
+            console.debug('msg', message.data);
+            console.debug('timeStamp', message.timeStamp);
+            getPubSub().innerHTML = message.data;
+        });
+    }, false);
+</script>
+</body>
+</html>

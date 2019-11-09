@@ -78,6 +78,8 @@ Before deploy to public cloud, you need build and push docker images...
 
 ## links
 
+* https://github.com/daggerok/spring-5-examples/blob/0a4468ac5c0544b527c00246b0c3702e53651598/reactor-processors/flux-sink/src/main/java/daggerok/FluxSinkApplication.java
+* https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html
 * https://kubernetes.github.io/ingress-nginx/examples/
 * [YouTube: Dead Easy Kubernetes Workflow (Cloud Next '19)](https://www.youtube.com/watch?v=62GLbBDLiPE)
 * [Docker k8s: part 1](https://www.docker.com/blog/designing-your-first-app-kubernetes-overview/)
